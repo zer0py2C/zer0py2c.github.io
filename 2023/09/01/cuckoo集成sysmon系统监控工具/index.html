@@ -1,0 +1,188 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cuckoo集成sysmon系统监控工具 | zer0py2c个人博客</title>
+  <meta name="author" content="zer0py2c">
+  
+  <meta name="description" content="1.引入sysmon.exe文件MD5：6b3a1d07407ae2670154b9ca624f6db9
+2.编写调用模块12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="cuckoo集成sysmon系统监控工具"/>
+  <meta property="og:site_name" content="zer0py2c个人博客"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">zer0py2c个人博客</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="关于作者">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>cuckoo集成sysmon系统监控工具</h2>
+					
+					<div>
+						<span class="post-time">2023-09-01 15:25:22</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h5 id="1-引入sysmon-exe文件"><a href="#1-引入sysmon-exe文件" class="headerlink" title="1.引入sysmon.exe文件"></a>1.引入sysmon.exe文件</h5><p>MD5：<code>6b3a1d07407ae2670154b9ca624f6db9</code></p>
+<h5 id="2-编写调用模块"><a href="#2-编写调用模块" class="headerlink" title="2.编写调用模块"></a>2.编写调用模块</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> lib.common.abstracts <span class="keyword">import</span> Auxiliary</span><br><span class="line"><span class="keyword">from</span> lib.common.results <span class="keyword">import</span> upload_to_host</span><br><span class="line"></span><br><span class="line">log = logging.getLogger(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sysmon</span>(threading.Thread, Auxiliary):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">clear_log</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            os.system(<span class="string">&quot;C:\\Windows\\System32\\wevtutil.exe clear-log microsoft-windows-sysmon/operational&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            log.error(<span class="string">&quot;Error clearing Sysmon events - %s&quot;</span> % e)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">collect_logs</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            os.system(<span class="string">&quot;C:\\Windows\\System32\\wevtutil.exe query-events &quot;</span>\</span><br><span class="line">                      <span class="string">&quot;microsoft-windows-sysmon/operational /format:xml /e:Events &gt; C:\\sysmon.xml&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            log.error(<span class="string">&quot;Could not create sysmon log file - %s&quot;</span> % e)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Give it some time to create the file</span></span><br><span class="line">        time.sleep(<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> os.path.exists(<span class="string">&quot;C:\\sysmon.xml&quot;</span>):</span><br><span class="line">            upload_to_host(<span class="string">&quot;C:\\sysmon.xml&quot;</span>, <span class="string">&quot;sysmon/%s.sysmon.xml&quot;</span> % time.time())</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            log.error(<span class="string">&quot;Sysmon log file not found in guest machine&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        self.clear_log()</span><br><span class="line">        <span class="keyword">while</span> self.do_run:</span><br><span class="line">            self.collect_logs()</span><br><span class="line">            time.sleep(<span class="number">15</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop</span>(<span class="params">self</span>):</span><br><span class="line">        self.do_run = <span class="literal">False</span></span><br><span class="line">        self.collect_logs()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, options=&#123;&#125;, analyzer=<span class="literal">None</span></span>):</span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        Auxiliary.__init__(self, options, analyzer)</span><br><span class="line">        self.do_run = <span class="literal">True</span></span><br><span class="line">        self.startupinfo = subprocess.STARTUPINFO()</span><br><span class="line">        self.startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">start</span>(<span class="params">self</span>):</span><br><span class="line">        subprocess.call(</span><br><span class="line">            [os.path.join(self.analyzer.path, <span class="string">&quot;bin&quot;</span>, <span class="string">&quot;sysmon.exe&quot;</span>),</span><br><span class="line">            <span class="string">&quot;-accepteula&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-i&quot;</span>], startupinfo=self.startupinfo)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="3-编写解析模块"><a href="#3-编写解析模块" class="headerlink" title="3.编写解析模块"></a>3.编写解析模块</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging, os, re</span><br><span class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</span><br><span class="line"><span class="keyword">import</span> xmltodict</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> cuckoo.common.abstracts <span class="keyword">import</span> Processing</span><br><span class="line"><span class="keyword">from</span> cuckoo.common.exceptions <span class="keyword">import</span> CuckooProcessingError</span><br><span class="line"></span><br><span class="line">log = logging.getLogger(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sysmon</span>(<span class="title class_ inherited__">Processing</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">remove_noise</span>(<span class="params">self, data</span>):</span><br><span class="line">        filtered_proc_creations_re = [</span><br><span class="line">            <span class="string">r&quot;C:\\Windows\\System32\\wevtutil\.exe\s+clear-log\s+microsoft-windows-(sysmon|powershell)\/operational&quot;</span>,</span><br><span class="line">            <span class="string">r&quot;bin\\is32bit.exe&quot;</span>,</span><br><span class="line">            <span class="string">r&quot;bin\\inject-(?:x86|x64).exe&quot;</span>,</span><br><span class="line">            <span class="string">r&quot;C:\\Windows\\System32\\wevtutil.exe\s+query-events microsoft-windows-powershell\/operational\s+\/rd:true\s+\/e:root\s+\/format:xml\s+\/uni:true&quot;</span>,</span><br><span class="line">            <span class="string">r&quot;C:\\Windows\\System32\\wevtutil.exe\s+query-events\s+microsoft-windows-sysmon\/operational\s+\/format:xml&quot;</span>,</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        filtered = []</span><br><span class="line">        <span class="keyword">for</span> event <span class="keyword">in</span> data:</span><br><span class="line">            is_filtered = <span class="literal">False</span></span><br><span class="line">            <span class="keyword">if</span> event[<span class="string">&quot;System&quot;</span>][<span class="string">&quot;EventID&quot;</span>] == <span class="string">&quot;1&quot;</span>:</span><br><span class="line">                <span class="keyword">for</span> p <span class="keyword">in</span> filtered_proc_creations_re:</span><br><span class="line">                    cmdline = event[<span class="string">&quot;EventData&quot;</span>][<span class="string">&quot;Data&quot;</span>][<span class="number">9</span>][<span class="string">&quot;#text&quot;</span>]</span><br><span class="line">                    <span class="keyword">if</span> re.search(p, cmdline):</span><br><span class="line">                        log.info(<span class="string">&quot;Supressed %s because it is noisy&quot;</span> % cmdline)</span><br><span class="line">                        is_filtered = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> is_filtered:</span><br><span class="line">                filtered.append(event)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> filtered</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        self.key = <span class="string">&quot;sysmon&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Determine oldest sysmon log and remove the rest</span></span><br><span class="line">        lastlog = os.listdir(<span class="string">&quot;%s/sysmon/&quot;</span> % self.analysis_path)</span><br><span class="line">        lastlog.sort()</span><br><span class="line">        lastlog = lastlog[-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># Leave only the most recent file</span></span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> os.listdir(<span class="string">&quot;%s/sysmon/&quot;</span> % self.analysis_path):</span><br><span class="line">            <span class="keyword">if</span> f != lastlog:</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    os.remove(<span class="string">&quot;%s/sysmon/%s&quot;</span> % (self.analysis_path, f))</span><br><span class="line">                <span class="keyword">except</span>:</span><br><span class="line">                    log.error(<span class="string">&quot;Failed to remove sysmon file log %s&quot;</span> % f)</span><br><span class="line"></span><br><span class="line">        os.rename(</span><br><span class="line">            <span class="string">&quot;%s/sysmon/%s&quot;</span> % (self.analysis_path, lastlog),</span><br><span class="line">            <span class="string">&quot;%s/sysmon/sysmon.xml&quot;</span> % self.analysis_path</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        data = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            xml = <span class="built_in">open</span>(<span class="string">&quot;%s/sysmon/sysmon.xml&quot;</span> % self.analysis_path).read()</span><br><span class="line">            xml = xml.decode(<span class="string">&quot;latin1&quot;</span>).encode(<span class="string">&quot;utf8&quot;</span>)</span><br><span class="line">            data = xmltodict.parse(xml)[<span class="string">&quot;Events&quot;</span>][<span class="string">&quot;Event&quot;</span>]</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">raise</span> CuckooProcessingError(<span class="string">&quot;Failed parsing sysmon.xml: %s&quot;</span> % e.message)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> self.remove_noise(data)</span><br></pre></td></tr></table></figure>
+
+
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+<p>
+  由 <a target="_blank" rel="noopener" href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a target="_blank" rel="noopener" href="https://github.com/wayou/hexo-theme-material">material</a> 主题
+</p>
+<p>
+  &copy; 2023 <a href="http://example.com"> zer0py2c </a>
+</p>
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
