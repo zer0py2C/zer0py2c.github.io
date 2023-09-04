@@ -1,0 +1,363 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Flink与PyFlink流处理（一） | zer0py2c个人博客</title>
+  <meta name="author" content="zer0py2c">
+  
+  <meta name="description" content="1概述Apache Flink是一个分布式计算引擎，用于在无边界和有边界数据流上进行有状态的计算。它能够在所有常见的集群环境中运行，且能够以内存速度和任意规模进行计算。
+1.1无界流与有界流
+无界流：有定义流的开始，但没有定义流的结束，数据会无休止地产生。比如采集MySQL Binlog数据和读取M">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Flink与PyFlink流处理（一）"/>
+  <meta property="og:site_name" content="zer0py2c个人博客"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">zer0py2c个人博客</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="关于作者">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Flink与PyFlink流处理（一）</h2>
+					
+					<div>
+						<span class="post-time">2023-09-04 16:37:55</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h3 id="1概述"><a href="#1概述" class="headerlink" title="1概述"></a>1概述</h3><p>Apache Flink是一个分布式计算引擎，用于在无边界和有边界数据流上进行有状态的计算。它能够在所有常见的集群环境中运行，且能够以内存速度和任意规模进行计算。</p>
+<h5 id="1-1无界流与有界流"><a href="#1-1无界流与有界流" class="headerlink" title="1.1无界流与有界流"></a>1.1无界流与有界流</h5><ul>
+<li>无界流：有定义流的开始，但没有定义流的结束，数据会无休止地产生。比如采集MySQL Binlog数据和读取MQ中的数据。<code>持续/实时处理</code></li>
+<li>有界流：既有定义流的开始，也有定义流的结束。比如读取RDB中表数据和读取HDFS上的文件。<code>批/离线处理</code></li>
+</ul>
+<h5 id="1-2有状态计算"><a href="#1-2有状态计算" class="headerlink" title="1.2有状态计算"></a>1.2有状态计算</h5><ul>
+<li>状态<code>state</code>（一个变量）是流处理特有的。由于流处理一般要进行增量计算——数据逐条处理，每次计算都是建立在上一次计算结果之上的，而Flink本身就能够提供状态管理以支撑增量计算。</li>
+</ul>
+<h3 id="2架构"><a href="#2架构" class="headerlink" title="2架构"></a>2架构</h3><p><u>Flink Runtime采用了标准的主从架构</u></p>
+<h5 id="2-1JobManager"><a href="#2-1JobManager" class="headerlink" title="2.1JobManager"></a>2.1JobManager</h5><ul>
+<li><code>Dispatcher</code>：向客户端提供了REST接口，用以提交作业。并将提交的作业传递给一个新的JobMaster。</li>
+<li><code>JobMaster</code>：管理一个作业的执行。在Flink中可以存在多个。</li>
+<li><code>ResourceManager</code>：负责Flink中资源的分配与回收（比如：task slot），在Flink中只能存在一个。</li>
+</ul>
+<h5 id="2-2TaskManager"><a href="#2-2TaskManager" class="headerlink" title="2.2TaskManager"></a>2.2TaskManager</h5><p><u>一个Flink Job中包含多个task。任务管理器负责执行作业流中的<code>task</code>任务，且在Flink中必须至少有一个TaskManager（JVM进程）。</u></p>
+<ul>
+<li><code>task slot</code>：资源调度的基本单位。一个槽位可以执行一个task。</li>
+<li><code>state backend</code>：状态管理。</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">1.</span> MemoryStateBackend（默认配置）——内存操作：状态<span class="code">`state`</span>在TaskManager内存中维护，checkpoint快照存储在JobManager内存中。强调高性能，适用于本地开发和调试。</span><br><span class="line"><span class="bullet">2.</span> RocksDBStateBackend——外存操作：状态<span class="code">`state`</span>在RocksDB数据库中维护，checkpoint快照存储到指定的文件系统目录中。强调高可靠，适用于状态数据较大的场景。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/images/%E6%9E%B6%E6%9E%84.jpg" alt="架构"></p>
+<h3 id="3分层API"><a href="#3分层API" class="headerlink" title="3分层API"></a>3分层API</h3><p>要使用Flink进行流处理，前提是能够开发出可以在Flink上运行的应用程序，这就需要API接口作为支持。</p>
+<p>Flink根据抽象程度分层，提供了三种不同的API。每一层级API在简洁性和表达力上有着不同的侧重。</p>
+<h5 id="3-1ProcessFunction"><a href="#3-1ProcessFunction" class="headerlink" title="3.1ProcessFunction"></a>3.1ProcessFunction</h5><p>用户可以在此抽象层中对状态和时间进行细粒度控制（比如：任意地修改状态数据、注册定时器来触发回调操作等），允许程序实现复杂的计算。</p>
+<blockquote>
+<p>大多数应用程序不需要使用上述最底层的抽象API。</p>
+</blockquote>
+<h5 id="3-2DataStream-API-DataSet-API"><a href="#3-2DataStream-API-DataSet-API" class="headerlink" title="3.2DataStream API&#x2F;DataSet API"></a>3.2DataStream API&#x2F;DataSet API</h5><ul>
+<li><code>DataStream API</code> ：应用于实时的流处理。</li>
+<li><code>DataSet API</code> ：应用于离线的批处理。</li>
+</ul>
+<blockquote>
+<p>所写程序未经过优化器优化。</p>
+</blockquote>
+<h5 id="3-3SQL-Table-API"><a href="#3-3SQL-Table-API" class="headerlink" title="3.3SQL&#x2F;Table API"></a>3.3SQL&#x2F;Table API</h5><p>Flink支持两种关系型的API：Table API和SQL。它们集成在一个抽象层，构成批流统一的API。</p>
+<ul>
+<li>为了在流上使用SQL查询，数据流会记录到Table表（输入流&lt;—&gt;Source Table，Sink Table&lt;—&gt;输出流）</li>
+<li>在Table表上进行查询，将产生一个新的动态表（编程角度：SQL支持链式调用）</li>
+</ul>
+<blockquote>
+<p>SQL&#x2F;Table API统一了DataStream API和DataSet API，一般情况下，建议使用该层API开发应用程序。</p>
+</blockquote>
+<p><img src="/images/%E5%88%86%E5%B1%82API.png" alt="分层API"></p>
+<h3 id="4连接器（SQL-Table-API-Connector）"><a href="#4连接器（SQL-Table-API-Connector）" class="headerlink" title="4连接器（SQL&#x2F;Table API Connector）"></a>4连接器（SQL&#x2F;Table API Connector）</h3><p>上述接口仅仅提供了应用程序与Flink的交互，而Flink作为一个流计算引擎，必然需要与第三方&#x2F;外部系统交互数据，交互的工具就是<code>Connector</code>连接器。Flink目前支持的连接器有：Kafka、JDBC、Elasticsearch等。</p>
+<blockquote>
+<p>Flink默认是没有打包Connector的，所以在程序开发之前，我们需要下载各个Connector所依赖的Jar包。</p>
+</blockquote>
+<h5 id="4-1-Kafka-Connector使用示例"><a href="#4-1-Kafka-Connector使用示例" class="headerlink" title="4.1 Kafka Connector使用示例"></a>4.1 Kafka Connector使用示例</h5><p><u>Flink提供了一套与表连接器（table connector）一起使用的表格式，定义了数据和表结构的映射关系，支持JSON、CSV等类型。</u></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 以下示例展示了如何创建连接Kafka数据的表，同时指定了数据映射格式</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> user_behavior (</span><br><span class="line">	user_id <span class="type">BIGINT</span>,</span><br><span class="line">    item_id <span class="type">BIGINT</span>,</span><br><span class="line">    category_id <span class="type">BIGINT</span>,</span><br><span class="line">    behavior STRING,</span><br><span class="line">    ts TIMESTRAMP(<span class="number">3</span>)</span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">	<span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;kafka&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;topic&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;user_behavior&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;properties.bootstrap.servers&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;localhost:9092&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;format&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;json&#x27;</span> # <span class="string">&#x27;format&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;csv&#x27;</span></span><br><span class="line">    ......</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="4-2小结"><a href="#4-2小结" class="headerlink" title="4.2小结"></a>4.2小结</h5><p>下图描述了一个流处理场景：源源不断的数据流向Kafka。应用程序会从Kafka获取数据源，经过Flink转换处理，最终持久化到MySQL中。</p>
+<p><img src="/images/Flink%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F.png" alt="分层API"></p>
+<h3 id="5PyFlink"><a href="#5PyFlink" class="headerlink" title="5PyFlink"></a>5PyFlink</h3><p><strong>PyFlink即Flink on Python，旨在将Flink生态系统的全部功能输出给Python用户</strong></p>
+<h5 id="5-1环境安装"><a href="#5-1环境安装" class="headerlink" title="5.1环境安装"></a>5.1环境安装</h5><ul>
+<li>Python版本要求：3.6+</li>
+<li>安装命令：pip install apache-flink&#x3D;&#x3D;1.10.0</li>
+</ul>
+<h5 id="5-2TableEnvironment"><a href="#5-2TableEnvironment" class="headerlink" title="5.2TableEnvironment"></a>5.2TableEnvironment</h5><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># TableEnvironment是SQL/Table API编程的核心，我们总是使用它创建source/sink table表、处理SQL查询、执行Job作业等</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>流处理的编程主体结构</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 导入相关包</span></span><br><span class="line"><span class="keyword">from</span> pyflink.datastream <span class="keyword">import</span> StreamExecutionEnvironment</span><br><span class="line"><span class="keyword">from</span> pyflink.table <span class="keyword">import</span> StreamTableEnvironment</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 创建TableEnvironment实例对象</span></span><br><span class="line">env = StreamExecutionEnvironment.get_execution_environment()</span><br><span class="line">table_env = StreamTableEnvironment.create(env)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 注册/创建source/sink表</span></span><br><span class="line">table_env.sql_update(<span class="string">&quot;&quot;&quot;CREATE TABLE source_table (...) WITH (...)&quot;&quot;&quot;</span>)</span><br><span class="line">table_env.sql_update(<span class="string">&quot;&quot;&quot;CREATE TABLE sink_table (...) WITH (...)&quot;&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 执行SQL查询</span></span><br><span class="line">table_env.from_path(<span class="string">&quot;source_table&quot;</span>)\</span><br><span class="line">	.select(<span class="string">&quot;...&quot;</span>)\</span><br><span class="line">    .insert_into(<span class="string">&quot;sink_table&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 执行Job作业</span></span><br><span class="line">table_env.execute(<span class="string">&quot;job_name&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>PyFlink1.10版使用文档</strong></li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://ci.apache.org/projects/flink/flink-docs-release-1.10/api/python/index.html">https://ci.apache.org/projects/flink/flink-docs-release-1.10/api/python/index.html</a></p>
+</blockquote>
+<h3 id="6某CDN日志实时分析案例"><a href="#6某CDN日志实时分析案例" class="headerlink" title="6某CDN日志实时分析案例"></a>6某CDN日志实时分析案例</h3><h5 id="6-1架构"><a href="#6-1架构" class="headerlink" title="6.1架构"></a>6.1架构</h5><p>CDN日志的解析一般有一个通用的架构模式，就是首先要将各个边缘节点的日志数据进行采集，一般会采集到消息队列，然后将消息队列和实时计算集群进行集成进行实时的日志分析，最后将分析的结果写到存储系统里面。将架构实例化，消息队列采用Kafka，实时计算采用Flink，最终将数据存储到MySQL中。如下图所示：</p>
+<p><img src="/images/%E6%9E%B6%E6%9E%842.jpg" alt="架构2"></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># CDN 假数据 &quot;uuid,client<span class="emphasis">_ip,request_</span>time,response<span class="emphasis">_size,uri&quot;</span></span></span><br><span class="line"><span class="emphasis"><span class="section">8a613f0a-b8a3-40d0-8288-688b724d3546,14.104.149.183,460,637121,https://www.aliyun.com/solution/all?spm=5176.141278.h2v3icoap.4.427b70feEbSUkR&amp;aly_</span>as=Pmz98PMp</span></span><br><span class="line">86a8193a-2b75-4a1a-8f16-69c211c58119,1.69.127.101,604,670506,https://www.aliyun.com/ss/?spm=5176.7920199.1kquk9v2l.3.610951f4HI0mNh</span><br><span class="line">6745b486-8df1-4971-aac6-17302433900f,36.24.191.86,477,10857,https://www.aliyun.com/activity?spm=5176.12825654.h2v3icoap.1.54212c4a3UoADs#/promotionArea</span><br></pre></td></tr></table></figure>
+
+<p>本案例将从CDN访问日志中，获取如下统计指标：</p>
+<ul>
+<li>按IP统计资源访问量</li>
+<li>按IP统计资源下载总数</li>
+<li>按IP统计资源平均下载速度</li>
+</ul>
+<h5 id="6-2Kafka数据读取DDL定义"><a href="#6-2Kafka数据读取DDL定义" class="headerlink" title="6.2Kafka数据读取DDL定义"></a>6.2Kafka数据读取DDL定义</h5><table>
+<thead>
+<tr>
+<th align="center">字段名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">uuid</td>
+<td align="center">VARCHAR</td>
+<td align="center">日志的标识符</td>
+</tr>
+<tr>
+<td align="center">client_ip</td>
+<td align="center">VARCHAR</td>
+<td align="center">请求CDN资源的客户端IP</td>
+</tr>
+<tr>
+<td align="center">request_time</td>
+<td align="center">BIGINT</td>
+<td align="center">处理请求花费的时间</td>
+</tr>
+<tr>
+<td align="center">response_size</td>
+<td align="center">BIGINT</td>
+<td align="center">返回的资源体量</td>
+</tr>
+<tr>
+<td align="center">uri</td>
+<td align="center">VARCHAR</td>
+<td align="center">请求的网址</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">kafka_source_ddl = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE cdn_access_log (</span></span><br><span class="line"><span class="string"> uuid VARCHAR,</span></span><br><span class="line"><span class="string"> client_ip VARCHAR,</span></span><br><span class="line"><span class="string"> request_time BIGINT,</span></span><br><span class="line"><span class="string"> response_size BIGINT,</span></span><br><span class="line"><span class="string"> uri VARCHAR</span></span><br><span class="line"><span class="string">) WITH (</span></span><br><span class="line"><span class="string"> &#x27;connector.type&#x27; = &#x27;kafka&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.version&#x27; = &#x27;universal&#x27;, # 不必使用具体的版本号</span></span><br><span class="line"><span class="string"> &#x27;connector.topic&#x27; = &#x27;access_log&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.properties.zookeeper.connect&#x27; = &#x27;localhost:2181&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.properties.bootstrap.servers&#x27; = &#x27;localhost:9092&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;format.type&#x27; = &#x27;csv&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;format.ignore-parse-errors&#x27; = &#x27;true&#x27; # 解析异常时，跳过当前字段数据（字段将置为null）</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="6-3MySQL数据写入DDL定义"><a href="#6-3MySQL数据写入DDL定义" class="headerlink" title="6.3MySQL数据写入DDL定义"></a>6.3MySQL数据写入DDL定义</h5><table>
+<thead>
+<tr>
+<th align="center">字段名</th>
+<th align="center">类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">client_ip</td>
+<td align="center">VARCHAR(255) PRIMARY KEY</td>
+<td align="center">请求CDN资源的客户端IP</td>
+</tr>
+<tr>
+<td align="center">access_count</td>
+<td align="center">BIGINT</td>
+<td align="center">当前的访问量</td>
+</tr>
+<tr>
+<td align="center">total_download</td>
+<td align="center">BIGINT</td>
+<td align="center">下载总量</td>
+</tr>
+<tr>
+<td align="center">download_speed</td>
+<td align="center">DOUBLE</td>
+<td align="center">下载速度</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql_sink_ddl = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE cdn_access_statistic (</span></span><br><span class="line"><span class="string"> client_ip VARCHAR,</span></span><br><span class="line"><span class="string"> access_count BIGINT,</span></span><br><span class="line"><span class="string"> total_download BIGINT,</span></span><br><span class="line"><span class="string"> download_speed DOUBLE</span></span><br><span class="line"><span class="string">) WITH (</span></span><br><span class="line"><span class="string"> &#x27;connector.type&#x27; = &#x27;jdbc&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.url&#x27; = &#x27;jdbc:mysql://10.8.50.191:3306/Flink&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.table&#x27; = &#x27;access_statistic&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.username&#x27; = &#x27;zer0py2c&#x27;,</span></span><br><span class="line"><span class="string"> &#x27;connector.password&#x27; = &#x27;123456&#x27;</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="6-4核心统计逻辑"><a href="#6-4核心统计逻辑" class="headerlink" title="6.4核心统计逻辑"></a>6.4核心统计逻辑</h5><p>在核心统计逻辑定义好之后开始执行作业：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># t_env为TableEnvironment实例对象</span></span><br><span class="line">t_env.from_path(<span class="string">&quot;cdn_access_log&quot;</span>)\</span><br><span class="line">   .select(<span class="string">&quot;uuid, client_ip, response_size, request_time&quot;</span>)\</span><br><span class="line">   .group_by(<span class="string">&quot;client_ip&quot;</span>)\</span><br><span class="line">   .select( <span class="comment"># 计算访问量</span></span><br><span class="line">           <span class="string">&quot;client_ip, count(uuid) as access_count, &quot;</span> </span><br><span class="line">           <span class="comment"># 计算下载总量 </span></span><br><span class="line">           <span class="string">&quot;sum(response_size) as total_download,  &quot;</span> </span><br><span class="line">           <span class="comment"># 计算下载速度</span></span><br><span class="line">           <span class="string">&quot;sum(response_size) * 1.0 / sum(request_time) as download_speed&quot;</span>) \</span><br><span class="line">   .insert_into(<span class="string">&quot;cdn_access_statistic&quot;</span>)</span><br><span class="line"><span class="comment"># 执行作业</span></span><br><span class="line">t_env.execute(<span class="string">&quot;pyflink_parse_cdn_log&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>统计情况示例：</p>
+<p><img src="/images/mysql.png" alt="mysql"></p>
+<h5 id="6-6环境配置"><a href="#6-6环境配置" class="headerlink" title="6.6环境配置"></a>6.6环境配置</h5><ul>
+<li><strong>MySQL库表创建</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE flink DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</span><br><span class="line"></span><br><span class="line">CREATE TABLE cdn_access_statistic(</span><br><span class="line">	client_ip VARCHAR(255) PRIMARY KEY,</span><br><span class="line">    access_count BIGINT,</span><br><span class="line">    total_download BIGINT,</span><br><span class="line">    download_speed DOUBLE</span><br><span class="line">) ENGINE=InnoDB CHARSET=utf8mb4;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Kafka主题创建</strong></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./bin/kafka-topics.sh --create --replication-factor 1 --partitions 1 --topic cdn_access_log --zookeeper localhost:2181</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Connector的Jar包下载</strong></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> <span class="variable">$PYFLINK_LIB</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -O https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka_2.11/1.10.0/flink-sql-connector-kafka_2.11-1.10.0.jar</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -O https://repo1.maven.org/maven2/org/apache/flink/flink-jdbc_2.11/1.10.0/flink-jdbc_2.11-1.10.0.jar</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -O https://repo1.maven.org/maven2/org/apache/flink/flink-csv/1.10.0/flink-csv-1.10.0-sql-jar.jar</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -O https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.19/mysql-connector-java-8.0.19.jar</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h5 id="命令行方式提交作业"><a href="#命令行方式提交作业" class="headerlink" title="命令行方式提交作业"></a>命令行方式提交作业</h5></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="variable">$PYFLINK_LIB</span>/../bin/flink run -m localhost:4000 -pyfs cdn_connector_ddl.py -py cdn_demo.py</span></span><br></pre></td></tr></table></figure>
+
+
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+<p>
+  由 <a target="_blank" rel="noopener" href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a target="_blank" rel="noopener" href="https://github.com/wayou/hexo-theme-material">material</a> 主题
+</p>
+<p>
+  &copy; 2023 <a href="http://example.com"> zer0py2c </a>
+</p>
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
