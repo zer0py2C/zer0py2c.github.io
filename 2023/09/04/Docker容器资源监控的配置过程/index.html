@@ -1,0 +1,198 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cAdvisor+Prometheus+Grafana配置容器资源监控 | zer0py2c个人博客</title>
+  <meta name="author" content="zer0py2c">
+  
+  <meta name="description" content="1.部署cAdvisorcAdvisor是一个开源的监控单节点Docker资源占用的数据收集工具，相比于大部分容器监控，它的资源消耗较低。在本案例中，它的作用是”采集数据”。
+12345678910$ docker run \  --volume=/:/rootfs:ro \  --volume=/">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="cAdvisor+Prometheus+Grafana配置容器资源监控"/>
+  <meta property="og:site_name" content="zer0py2c个人博客"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">zer0py2c个人博客</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="关于作者">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>cAdvisor+Prometheus+Grafana配置容器资源监控</h2>
+					
+					<div>
+						<span class="post-time">2023-09-04 15:22:29</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h3 id="1-部署cAdvisor"><a href="#1-部署cAdvisor" class="headerlink" title="1.部署cAdvisor"></a>1.部署cAdvisor</h3><p>cAdvisor是一个开源的监控单节点Docker资源占用的数据收集工具，相比于大部分容器监控，它的资源消耗较低。在本案例中，它的作用是”采集数据”。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run \</span></span><br><span class="line"><span class="language-bash">  --volume=/:/rootfs:ro \</span></span><br><span class="line"><span class="language-bash">  --volume=/var/run:/var/run:ro \</span></span><br><span class="line"><span class="language-bash">  --volume=/sys:/sys:ro \</span></span><br><span class="line"><span class="language-bash">  --volume=/var/lib/docker/:/var/lib/docker:ro \</span></span><br><span class="line"><span class="language-bash">  --volume=/dev/disk/:/dev/disk:ro \</span></span><br><span class="line"><span class="language-bash">  --publish=8090:8080 \</span></span><br><span class="line"><span class="language-bash">  --detach=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">  --name=cadvisor \</span></span><br><span class="line"><span class="language-bash">  google/cadvisor:v0.24.1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-部署Prometheus"><a href="#2-部署Prometheus" class="headerlink" title="2.部署Prometheus"></a>2.部署Prometheus</h3><p>Prometheus是一个开源的系统监控告警工具，在本案例中，它的作用是”数据源”。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/prometheus//releases/download/v2.8.0/prometheus-2.8.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf prometheus-2.8.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> prometheus-2.8.0.linux-amd64; vim prometheus.yml</span></span><br><span class="line">    static_configs:</span><br><span class="line">    - targets: [&#x27;本机IP:9090&#x27;]</span><br><span class="line">  - job_name: &#x27;docker&#x27;</span><br><span class="line">    static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">      - &quot;本机IP:8090&quot;</span><br><span class="line">      - &quot;本机IP:8090&quot;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> prometheus promtool /usr/local/bin/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">nohup</span> prometheus --config.file=./prometheus.yml &gt; prometheus.log 2&gt;&amp;1 &amp;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-部署Grafana"><a href="#3-部署Grafana" class="headerlink" title="3.部署Grafana"></a>3.部署Grafana</h3><p>Grafana是一个开源的监控数据可视化平台，在本案例中，它的作用是”数据展示”。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://dl.grafana.com/enterprise/release/grafana-enterprise_8.3.3_amd64.deb</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo dpkg -i grafana-enterprise_8.3.3_amd64.deb</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo systemctl daemon-reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo systemctl start grafana-server</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo systemctl status grafana-server</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo systemctl <span class="built_in">enable</span> grafana-server.service</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-Grafana配置Prometheus数据源"><a href="#4-Grafana配置Prometheus数据源" class="headerlink" title="4.Grafana配置Prometheus数据源"></a>4.Grafana配置Prometheus数据源</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sum</span>(rate(container_cpu_usage_seconds_total&#123;name<span class="operator">=</span><span class="operator">~</span>&quot;.+&quot;&#125;[<span class="number">1</span>m])) <span class="keyword">by</span> (name) <span class="operator">*</span> <span class="number">100</span> # 每个容器CPU占用率统计</span><br><span class="line">container_memory_usage_bytes&#123;image<span class="operator">!=</span>&quot;&quot;&#125; <span class="operator">/</span> <span class="number">1024</span> <span class="operator">/</span> <span class="number">1024</span> # 每个容器内存占用统计（单位：MB）</span><br><span class="line"><span class="built_in">sum</span>(container_fs_usage_bytes) <span class="operator">/</span> <span class="built_in">sum</span>(container_fs_limit_bytes) <span class="operator">*</span> <span class="number">100</span> # 容器磁盘占用率统计</span><br><span class="line"><span class="built_in">sum</span>(rate(container_network_transmit_bytes_total&#123;image<span class="operator">!=</span>&quot;&quot;&#125;[<span class="number">1</span>m])) <span class="keyword">without</span> (interface) <span class="operator">/</span> <span class="number">1024</span> <span class="operator">/</span> <span class="number">1024</span> <span class="operator">*</span> <span class="number">8</span> # 每个容器网络传输速率（单位：Mb<span class="operator">/</span>s）</span><br></pre></td></tr></table></figure>
+
+
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+<p>
+  由 <a target="_blank" rel="noopener" href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a target="_blank" rel="noopener" href="https://github.com/wayou/hexo-theme-material">material</a> 主题
+</p>
+<p>
+  &copy; 2023 <a href="http://example.com"> zer0py2c </a>
+</p>
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
