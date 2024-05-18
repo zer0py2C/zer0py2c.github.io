@@ -1,0 +1,197 @@
+	<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Milvus2.3.4源码编译安装 | zer0py2c个人博客</title>
+  <meta name="author" content="zer0py2c">
+  
+  <meta name="description" content="1.Python解释器下载地址：官网下载
+12345678tar -zxvf Python-3.8.10.tgz &amp;amp;&amp;amp; cd Python-3.8.10sudo mkdir /usr/local/python3sudo apt-get install libssl-dev opens">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Milvus2.3.4源码编译安装"/>
+  <meta property="og:site_name" content="zer0py2c个人博客"/>
+
+  
+  
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#009688">
+		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+		<meta name="theme-color" content="#009688">
+		<!-- favicon end -->
+    <!-- <link href="/favicon.ico" rel="icon"> -->
+  
+
+  <!-- toc -->
+  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+
+  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
+
+  <!-- material design -->
+	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
+  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
+  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
+	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
+
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+
+  
+
+  
+
+  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+ 	<body>
+	  <nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">菜单</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">zer0py2c个人博客</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li>
+                    <a href="/" title="">
+                    <i class="fa fa-home"></i>首页
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/archives" title="">
+                    <i class="fa fa-list"></i>存档
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/about" title="关于作者">
+                    <i class="fa fa-info-circle"></i>关于
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/atom.xml" title="订阅源">
+                    <i class="fa fa-rss"></i>RSS
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	  <div class="container" >
+	    <div class="row">
+	
+	<div class="col-md-9 center-content">
+	
+
+		<div class="content">
+			<!-- index -->
+		   
+
+			  		<h2>Milvus2.3.4源码编译安装</h2>
+					
+					<div>
+						<span class="post-time">2024-04-09 14:55:05</span>
+					</div>	
+					
+
+					<div class="article-content">
+						<h3 id="1-Python解释器"><a href="#1-Python解释器" class="headerlink" title="1.Python解释器"></a>1.Python解释器</h3><p>下载地址：<a target="_blank" rel="noopener" href="https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz">官网下载</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf Python-3.8.10.tgz &amp;&amp; cd Python-3.8.10</span><br><span class="line">sudo mkdir /usr/local/python3</span><br><span class="line">sudo apt-get install libssl-dev openssl gcc make libffi-dev</span><br><span class="line">sudo apt-get install libreadline-dev tk-dev libgdbm-dev libdb-dev libpcap-dev xz-utils libexpat1-dev zlib1g-dev libbz2-dev libssl-dev libncurses5-dev libsqlite3-dev</span><br><span class="line">./configure --prefix=/usr/local/python3</span><br><span class="line">make &amp;&amp; sudo make install</span><br><span class="line">sudo ln -s /usr/local/python3/bin/python3.8 /usr/bin/python</span><br><span class="line">sudo ln -s /usr/local/python3/bin/pip3.8 /usr/bin/pip</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Golang编译器"><a href="#2-Golang编译器" class="headerlink" title="2.Golang编译器"></a>2.Golang编译器</h3><p>下载地址：<a target="_blank" rel="noopener" href="https://go.dev/dl/go1.18.3.linux-amd64.tar.gz">官网下载</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -zxvf go1.18.3.linux-amd64.tar.gz -C /usr/local/</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置系统环境变量</span></span><br><span class="line">mkdir /home/zer0py2c/gopath</span><br><span class="line">export GOPATH=/home/zer0py2c/gopath</span><br><span class="line">export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置Golang环境变量</span></span><br><span class="line">go env -w GO111MODULE=on</span><br><span class="line">go env -w GOPROXY=https://goproxy.cn</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-CMake"><a href="#3-CMake" class="headerlink" title="3.CMake"></a>3.CMake</h3><p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/Kitware/CMake/releases/download/v3.29.2/cmake-3.29.2.tar.gz">官网下载</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cmake-3.29.2.tar.gz &amp;&amp; cd cmake-3.29.2</span><br><span class="line">./bootstrap</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-protobuf"><a href="#4-protobuf" class="headerlink" title="4.protobuf"></a>4.protobuf</h3><p>下载地址1：<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases/tag/v3.21.12">官方下载</a></p>
+<p>下载地址2：<a target="_blank" rel="noopener" href="https://github.com/google/googletest/releases/tag/v1.14.0">官方下载</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf protobuf-3.21.12.tar.gz</span><br><span class="line">tar -zxvf googletest-1.14.0.tar.gz</span><br><span class="line">mv googletest-1.14.0/* protobuf-3.21.12/third_party/googletest/</span><br><span class="line">cd protobuf-3.21.12</span><br><span class="line">sudo apt-get install autoconf libtool</span><br><span class="line">./autogen.sh</span><br><span class="line">sudo mkdir -p /data/protobuf/proto</span><br><span class="line">./configure --prefix=/data/protobuf/proto</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境变量</span></span><br><span class="line">export PROTOBUF_HOME=/data/protobuf/proto</span><br><span class="line">export PATH=$PROTOBUF_HOME/bin:$PATH</span><br><span class="line">export LIBRARY_PATH=$PROTOBUF_HOME/lib:$LIBRARY_PATH</span><br><span class="line">export LD_LIBRARY_PATH=$PROTOBUF_HOME/lib:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-milvus"><a href="#5-milvus" class="headerlink" title="5.milvus"></a>5.milvus</h3><p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/milvus-io/milvus/releases/tag/v2.3.4">官方下载</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf milvus-2.3.4.tar.gz</span><br><span class="line">./scripts/install_deps.sh</span><br><span class="line">make milvus</span><br></pre></td></tr></table></figure>
+
+
+					</div>
+
+			  <!-- about -->
+			  
+		</div>
+
+		<!-- pagination -->
+	  
+
+		<div class="comment-section">
+  
+  
+
+
+</div>
+	</div>
+
+	
+
+</div>
+
+
+		<footer>
+			
+
+<p>
+  由 <a target="_blank" rel="noopener" href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a target="_blank" rel="noopener" href="https://github.com/wayou/hexo-theme-material">material</a> 主题
+</p>
+<p>
+  &copy; 2024 <a href="http://example.com"> zer0py2c </a>
+</p>
+<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
+
+		</footer>
+	  </div>
+
+		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
+
+		<!-- material design -->
+		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
+		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
+		<!-- toc -->
+		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
+		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
+
+		<script src="/js/main.js"></script>
+
+	</body>
+</html>
